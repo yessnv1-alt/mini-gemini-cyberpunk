@@ -49,8 +49,9 @@
                 const aiText = data.candidates[0].content.parts[0].text;
                 chatBox.innerHTML += `<div class="ai-msg">${marked.parse(aiText)}</div>`;
             } catch (err) {
-                chatBox.innerHTML += `<div class="ai-msg" style="color:red">Error: Verifica tu API Key.</div>`;
-            }
+    console.error("Error completo:", err); // Esto imprimirá el detalle en la consola (F12)
+    chatBox.innerHTML += `<div class="ai-msg" style="color:red">Error: ${err.message}. Revisa la consola (F12).</div>`;
+}
         }
         sendBtn.onclick = enviarMensaje;
     </script>
