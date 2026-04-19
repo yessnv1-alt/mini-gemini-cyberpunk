@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mini Gemini AI</title>
+    <style>
+        /* CSS aquí dentro */
+        :root { --neon-green: #00ffcc; --neon-yellow: #fff380; --bg: #0a0a0a; }
+        body { background: var(--bg); color: #fff; font-family: 'Courier New', monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+        header { padding: 10px; border-bottom: 2px solid var(--neon-green); color: var(--neon-yellow); text-align: center; }
+        #chat-container { flex: 1; overflow-y: auto; padding: 20px; }
+        .ai-msg { border-left: 3px solid var(--neon-green); padding-left: 10px; margin: 10px 0; background: #111; }
+        .user-msg { color: var(--neon-yellow); text-align: right; margin: 10px 0; }
+        #input-area { padding: 20px; display: flex; gap: 10px; border-top: 2px solid var(--neon-green); }
+        textarea { flex: 1; background: #000; color: var(--neon-green); border: 1px solid var(--neon-green); padding: 10px; }
+        button { background: transparent; color: var(--neon-green); border: 1px solid var(--neon-green); cursor: pointer; padding: 10px; }
+    </style>
+</head>
+<body>
+    <header>Gemini Cyberpunk Master</header>
+    <div id="chat-container"><div id="chat-box"></div></div>
+    <div id="input-area">
+        <textarea id="prompt-input" placeholder="Escribe tu mensaje..."></textarea>
+        <button id="send-btn">ENVIAR</button>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        /* JS aquí dentro */
+        const API_KEY = "AIzaSyDSBaRWnjXe9RQJenNmNku_x1Ltj87DBLA"; // REEMPLAZA ESTO
+        const chatBox = document.getElementById('chat-box');
+        const promptInput = document.getElementById('prompt-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        async function enviarMensaje() {
+            const text = promptInput.value;
+            if (!text) return;
+            chatBox.innerHTML += `<div class="user-msg">Tú: ${text}</div>`;
+            promptInput.value = '';
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
+                });
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+                chatBox.innerHTML += `<div class="ai-msg">${marked.parse(aiText)}</div>`;
+            } catch (err) {
+                chatBox.innerHTML += `<div class="ai-msg" style="color:red">Error: Verifica tu API Key.</div>`;
+            }
+        }
+        sendBtn.onclick = enviarMensaje;
+    </script>
+</body>
+</html>
